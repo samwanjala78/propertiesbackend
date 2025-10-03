@@ -56,8 +56,8 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: {
-    type: String, 
-    required: true, 
+    type: String,
+    required: true,
     unique: true,
     lowercase: true,
     trim: true
@@ -162,7 +162,7 @@ const viewSchema = new mongoose.Schema({
 const View = mongoose.model("View", viewSchema);
 
 app.post("/views", async (req, res) => {
-  const {userId, propertyId} = req.body;
+  const { userId, propertyId } = req.body;
 
   const TIME_WINDOW_HOURS = 120;
   const cutoff = new Date(Date.now() - TIME_WINDOW_HOURS * 60 * 60 * 1000);
@@ -271,13 +271,31 @@ app.get("/search", async (req, res) => {
       {
         $search: {
           index: "default",
-          autocomplete: {
-      query: query,
-      path: ["title", "description", "location"],
-      fuzzy: {
-        maxEdits: 1
-      }
-    }
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: query,
+                  path: "title",
+                  fuzzy: { maxEdits: 1 }
+                }
+              },
+              {
+                autocomplete: {
+                  query: query,
+                  path: "description",
+                  fuzzy: { maxEdits: 1 }
+                }
+              },
+              {
+                autocomplete: {
+                  query: query,
+                  path: "location",
+                  fuzzy: { maxEdits: 1 }
+                }
+              }
+            ]
+          }
         },
       },
       {
