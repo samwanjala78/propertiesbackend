@@ -263,5 +263,35 @@ app.put("/properties/:id", async (req, res) => {
   }
 });
 
+app.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q || "";
+
+    const results = await Property.aggregate([
+      {
+        $search: {
+          index: "default",
+          text: {
+            query: query,
+            path: ["title", "description", "location"],
+            fuzzy: {
+              maxEdits: 2,
+              prefixLength: 1,
+            },
+          },
+        },
+      },
+      {
+        $limit: 20,
+      },
+    ]);
+
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
