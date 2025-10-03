@@ -275,7 +275,7 @@ app.get("/search", async (req, res) => {
             query: query,
             path: ["title", "description", "location"],
             fuzzy: {
-              maxEdits: 2,
+              maxEdits: 10,
               prefixLength: 1,
             },
           },
