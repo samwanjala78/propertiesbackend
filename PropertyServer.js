@@ -271,14 +271,13 @@ app.get("/search", async (req, res) => {
       {
         $search: {
           index: "default",
-          text: {
-            query: query,
-            path: ["title", "description", "location"],
-            fuzzy: {
-              maxEdits: 10,
-              prefixLength: 1,
-            },
-          },
+          autocomplete: {
+      query: query,
+      path: ["title", "description", "location"],
+      fuzzy: {
+        maxEdits: 1
+      }
+    }
         },
       },
       {
